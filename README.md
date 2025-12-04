@@ -21,6 +21,9 @@ Time Period: 1990–present (or available data)
 Data Provider: yfinance
 Price Type: Adjusted close
 Frequency:
+Contribution levels tested ($100, $1,000, $5,000)
+Number of dip thresholds tested (e.g., 3%, 5%, 10%, 15%)
+Total number of simulations run
 
 3.2 Strategy Definitions
 DCA Strategy:
@@ -36,15 +39,59 @@ Track for each month:
     All-time-high
 Assumptions (no trading fees, no slippage, dividents)
 
-3.4 Contribution levels
-
-3.5 Dip Thresholds
-Vary dip thresholds (3%, 5%, 10%, 15%)
-Test different periods within 1990–present to capture multiple market regimes
-
-3.6 Limitations
-Past performance ≠ future performance
-
 4. Results
+Create a matrix with the results include Instrument, Contribution level, threshold level. The time window will be different as per data availability.
+
+4.1 Portfolio Growth Over Time
+Chart comparing total portfolio value
+Commentary on growth patterns
+
+4.2 Number & Timing of Purchases
+How often each strategy invested
+Periods of no investment for dip strategy
+Months where dip strategy bought substantial amounts
+
+4.3 Cash Accumulation Behavior
+Maximum cash held
+Average cash held
+Length of time cash stayed idle
+“Cash drag” observations
+
+4.4 Returns Comparison
+Total invested
+Final value
+Net return
+Annualized return (CAGR)
+
+4.5 Risk Metrics
+Maximum cash idle time
+Maximum drawdown
+Volatility (std dev of monthly returns)
+Worst 12-month period
+Sharpe ratio (risk-adjusted performance)
+
+4.6 Sensitivity Analysis
+Test dip thresholds: 3%, 5%, 10%, 15%
+Show how results change with deeper dips
+Show whether dip-buying is robust or fragile
+
 5. Conclusion
+Interpret the results:
+When does DCA shine?
+When does BTD work best?
+Did BTD miss major bull runs?
+Did cash accumulation reduce long-term compounding?
+Did DCA buy at poor times too but still outperform?
+Behavioral differences:
+DCA = easy to follow
+BTD = psychologically difficult (requires patience + discipline)
+
+Summarize:
+Which strategy performed better
+Under which conditions
+Key takeaways for investors
+Whether dip-buying is worth the added complexity
+
 6. Appendix
+Full code
+Raw transaction logs
