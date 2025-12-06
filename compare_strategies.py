@@ -42,12 +42,21 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
+import argparse
 
-START_DATE = "2003-01-01"
-END_DATE = "2025-01-01"
-TICKER = "SPY"
-MONTHLY_AMOUNT = 1000.0
-DROP_THRESHOLD = 0.05     # 5% drop threshold (5% = 0.05)
+def parse_args():
+    parser = argparse.ArgumentParser(description="DCA vs Buy-the-Dip Backtest")
+    parser.add_argument("--ticker", type=str, default="^GSPC",
+                        help="Instrument ticker (default: ^GSPC)")
+    parser.add_argument("--monthly", type=float, default=1000.0,
+                        help="Monthly contribution amount (default: 1000)")
+    parser.add_argument("--start", type=str, default="2000-01-01",
+                        help="Backtest start date YYYY-MM-DD (default: 2000-01-01)")
+    parser.add_argument("--end", type=str, default="2025-01-01",
+                        help="Backtest end date YYYY-MM-DD (default: 2025-01-01)")
+    parser.add_argument("--threshold", type=float, default=0.05,
+                        help="Dip threshold as decimal (default: 0.05 = 5%)")
+    return parser.parse_args()
 
 def download_monthly_prices(ticker, start, end):
     data = yf.download(ticker, start=start, end=end, progress=False, auto_adjust=False)
@@ -123,6 +132,13 @@ def simulate_dip_strategy(monthly_prices, monthly_amount, drop_threshold):
 
 
 def main():
+    args = parse_args()
+
+    TICKER = args.ticker
+    START_DATE = args.start
+    END_DATE = args.end
+    MONTHLY_AMOUNT = args.monthly
+    DROP_THRESHOLD = args.threshold
     print(f"Downloading {TICKER} data from {START_DATE} to {END_DATE}...")
     monthly = download_monthly_prices(TICKER, START_DATE, END_DATE)
     print(f"Got {len(monthly)} month-ends. Range {monthly.index.min().date()} to {monthly.index.max().date()}")
