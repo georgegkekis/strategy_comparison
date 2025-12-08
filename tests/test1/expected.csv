@@ -1,0 +1,12 @@
+ticker,FAKE
+start,2025-01-01
+end,2025-12-31
+monthly_amount,100
+dip_threshold,0.05
+expected_final_value_dca,tbd
+expected_shares_dca,tbd
+expected_cash_dca,tbd
+expected_final_value_dip,tbd
+expected_shares_dip,tbd
+expected_cash_dip,tbd
+
