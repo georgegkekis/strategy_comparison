@@ -1,0 +1,5 @@
+ticker,FAKE
+start,2025-01-01
+end,2025-12-31
+monthly_amount,100
+dip_threshold,0.05

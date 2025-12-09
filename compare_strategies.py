@@ -43,6 +43,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import argparse
+import glob
+import os
 
 def parse_args():
     parser = argparse.ArgumentParser(description="DCA vs Buy-the-Dip Backtest")
@@ -56,6 +58,8 @@ def parse_args():
                         help="Backtest end date YYYY-MM-DD (default: 2025-01-01)")
     parser.add_argument("--threshold", type=float, default=0.05,
                         help="Dip threshold as decimal (default: 0.05 = 5%)")
+    parser.add_argument("--run-tests", action="store_true",
+                        help="Run all tests in /tests directory")
     return parser.parse_args()
 
 def download_monthly_prices(ticker, start, end):
@@ -130,9 +134,71 @@ def simulate_dip_strategy(monthly_prices, monthly_amount, drop_threshold):
     df = pd.DataFrame(history).set_index('date')
     return df, shares, cash
 
+def run_tests():
+    print("Running tests...")
+
+    test_dirs = glob.glob("tests/test*")
+    if not test_dirs:
+        print("No test directories found.")
+        return
+
+    for test_dir in test_dirs:
+        print(f"\n=== Running test in {test_dir} ===")
+
+        input_path = f"{test_dir}/input.csv"
+        data_path = f"{test_dir}/data.csv"
+        expected_path = f"{test_dir}/expected.csv"
+
+        if not os.path.exists(input_path):
+            print("Missing input.csv — skipping.")
+            continue
+        if not os.path.exists(data_path):
+            print("Missing data.csv — skipping.")
+            continue
+        if not os.path.exists(expected_path):
+            print("Missing expected.csv — skipping.")
+            continue
+
+        inp_df = pd.read_csv(input_path, header=None, names=["key", "value"])
+        inp = inp_df.set_index("key")["value"].to_dict()
+
+        monthly  = float(inp["monthly_amount"])
+        th       = float(inp["dip_threshold"])
+
+        monthly_prices = pd.read_csv(data_path, parse_dates=["date"])
+        monthly_prices = monthly_prices.set_index("date")
+
+        df_a, shares_a, cash_a = simulate_dca(monthly_prices, monthly)
+        df_b, shares_b, cash_b = simulate_dip_strategy(monthly_prices, monthly, th)
+
+        final_price = monthly_prices["adj_close"].iloc[-1]
+
+        actual = {
+            "final_value_dca": shares_a * final_price + cash_a,
+            "shares_dca": shares_a,
+            "cash_dca": cash_a,
+            "final_value_dip": shares_b * final_price + cash_b,
+            "shares_dip": shares_b,
+            "cash_dip": cash_b
+        }
+
+        exp_df = pd.read_csv(expected_path, header=None, names=["key", "value"])
+        expected = exp_df.set_index("key")["value"].astype(float).to_dict()
+
+        for key in expected:
+            e = expected[key]
+            a = actual[key]
+            assert np.isclose(a, e, rtol=1e-2, atol=1e-2), \
+                f"{test_dir} | {key}: expected {e}, got {a}"
+
+        print(f"{test_dir}: PASS")
+
 
 def main():
     args = parse_args()
+    if args.run_tests:
+        run_tests()
+        return
 
     TICKER = args.ticker
     START_DATE = args.start
