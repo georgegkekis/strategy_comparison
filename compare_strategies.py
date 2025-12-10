@@ -219,6 +219,10 @@ def main():
     df_b, shares_b, cash_b = simulate_dip_strategy(monthly, MONTHLY_AMOUNT, DROP_THRESHOLD)
     final_value_b = shares_b * final_price + cash_b
     total_invested_b = MONTHLY_AMOUNT * len(df_b) - df_b['cash'].iloc[-1]  # approx: invested = total supplied - leftover cash
+    dca_invest_months = (df_a["cash_in"] > 0).sum()
+    dip_invest_months = (df_b["shares_bought"] > 0).sum()
+    dip_no_invest_months = df_b.index[df_b["shares_bought"] == 0]
+    substantial_buys = df_b[df_b["shares_bought"] * df_b["price"] >= 12 * MONTHLY_AMOUNT]
 
     # Print summary
     print("\n--- Summary ---")
@@ -235,7 +239,18 @@ def main():
     print(f"  Total invested (actually spent): ${invested_b:,.2f}")
     print(f"  Final portfolio value: ${final_value_b:,.2f}")
     print(f"  Shares held: {shares_b:.6f}  Cash leftover: ${cash_b:.2f}")
+    print("\n--- Additional Analysis ---")
+    print(f"DCA invested in {dca_invest_months} months")
+    print(f"DIP invested in {dip_invest_months} months")
+    print(f"DIP skipped {len(dip_no_invest_months)} months")
+    substantial_buys = substantial_buys.copy()  # avoid SettingWithCopyWarning
+    substantial_buys["invested"] = substantial_buys["shares_bought"] * substantial_buys["price"]
 
+    if not substantial_buys.empty:
+        print("\nSubstantial DIP buys:")
+        print(substantial_buys[["price", "shares_bought", "invested"]])
+    else:
+        print("\nNo substantial DIP buys")
     # Save results and plots
     df_a.to_csv("strategy_dca_history.csv")
     df_b.to_csv("strategy_dip_history.csv")
