@@ -1,0 +1,28 @@
+Test: DCA buys shares correctly
+Goal: Verify that DCA always invests the monthly amount, for every month, no conditions.
+Test dataset:
+Dates: 3 months
+Prices: 100, 200, 400
+Amount: 100
+Expected:
+Shares = 100/100 + 100/200 + 100/400
+Cash = 0
+Final value = shares * last_price
+
+Test: Dip strategy buys only when dip threshold met
+Dataset:
+Prices: 100 → 95 → 120
+Threshold: 5%
+Amount: 100
+Expected:
+Buy in month 2 only (because 95 is a ≥5% dip from 100)
+Buy nothing month 3
+Cash accumulates correctly
+Shares correct
+
+Test: All prices increasing
+Dip strategy never triggers.
+Expected:
+DCA fully invested
+Dip has full cash leftover
+DCA should be > Dip
