@@ -46,6 +46,13 @@ import argparse
 import glob
 import os
 
+def calculate_cagr(final_value, total_invested, start_date, end_date):
+    days = (end_date - start_date).days
+    years = days / 365.25
+    if total_invested <= 0 or years <= 0:
+        return np.nan
+    return (final_value / total_invested) ** (1 / years) - 1
+
 def parse_args():
     parser = argparse.ArgumentParser(description="DCA vs Buy-the-Dip Backtest")
     parser.add_argument("--ticker", type=str, default="^GSPC",
@@ -215,26 +222,33 @@ def main():
     final_value_a = shares_a * final_price + cash_a
     total_invested_a = MONTHLY_AMOUNT * len(df_a)
 
-    # Strategy B: only buy on >=5% down vs previous month
+    # Strategy B: buy-the-dip
     df_b, shares_b, cash_b = simulate_dip_strategy(monthly, MONTHLY_AMOUNT, DROP_THRESHOLD)
     final_value_b = shares_b * final_price + cash_b
-    total_invested_b = MONTHLY_AMOUNT * len(df_b) - df_b['cash'].iloc[-1]  # approx: invested = total supplied - leftover cash
+    total_invested_b = MONTHLY_AMOUNT * len(df_b)
     dca_invest_months = (df_a["cash_in"] > 0).sum()
     dip_invest_months = (df_b["shares_bought"] > 0).sum()
     dip_no_invest_months = df_b.index[df_b["shares_bought"] == 0]
     substantial_buys = df_b[df_b["shares_bought"] * df_b["price"] >= 12 * MONTHLY_AMOUNT]
+    start_dt = monthly.index[0].to_pydatetime()
+    end_dt   = monthly.index[-1].to_pydatetime()
 
     # Print summary
     print("\n--- Summary ---")
     print(f"Months simulated: {len(monthly)}")
     print(f"Final price (last month-end): {final_price:.2f}")
     print("\nStrategy A (DCA):")
+    cagr_a = calculate_cagr(final_value_a, total_invested_a, start_dt, end_dt)
+    print(f"  CAGR A: {cagr_a*100:.2f}%")
     print(f"  Total invested: ${total_invested_a:,.2f}")
     print(f"  Final portfolio value: ${final_value_a:,.2f}")
     print(f"  Shares held: {shares_a:.6f}  Cash leftover: ${cash_a:.2f}")
 
-    print("\nStrategy B (Buy on >=5% monthly dip):")
+    print("\nStrategy B (Buy-the-dip):")
     invested_b = MONTHLY_AMOUNT * len(monthly) - df_b['cash'].iloc[-1]
+    cagr_b = calculate_cagr(final_value_b, total_invested_b, start_dt, end_dt)
+
+    print(f"  CAGR: {cagr_b*100:.2f}%")
     print(f"  Total money supplied (budgeted): ${MONTHLY_AMOUNT * len(monthly):,.2f}")
     print(f"  Total invested (actually spent): ${invested_b:,.2f}")
     print(f"  Final portfolio value: ${final_value_b:,.2f}")
