@@ -229,6 +229,18 @@ def main():
     dca_invest_months = (df_a["cash_in"] > 0).sum()
     dip_invest_months = (df_b["shares_bought"] > 0).sum()
     dip_no_invest_months = df_b.index[df_b["shares_bought"] == 0]
+    # Longest consecutive waiting streak (in months)
+    no_buy = (df_b["shares_bought"] == 0).astype(int)
+
+    max_wait = 0
+    current = 0
+    for v in no_buy:
+        if v == 1:
+            current += 1
+            max_wait = max(max_wait, current)
+        else:
+            current = 0
+
     substantial_buys = df_b[df_b["shares_bought"] * df_b["price"] >= 12 * MONTHLY_AMOUNT]
     start_dt = monthly.index[0].to_pydatetime()
     end_dt   = monthly.index[-1].to_pydatetime()
@@ -253,6 +265,7 @@ def main():
     print(f"  Total invested (actually spent): ${invested_b:,.2f}")
     print(f"  Final portfolio value: ${final_value_b:,.2f}")
     print(f"  Shares held: {shares_b:.6f}  Cash leftover: ${cash_b:.2f}")
+    print(f"  Max consecutive months waiting for dip: {max_wait}")
     print("\n--- Additional Analysis ---")
     print(f"DCA invested in {dca_invest_months} months")
     print(f"DIP invested in {dip_invest_months} months")
