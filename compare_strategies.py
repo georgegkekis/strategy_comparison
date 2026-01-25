@@ -241,6 +241,7 @@ def main():
     max_dd_a = calculate_max_drawdown(df_a["total_value"])
     max_dd_b = calculate_max_drawdown(df_b["total_value"])
 
+
     max_wait = 0
     current = 0
     for v in no_buy:
@@ -260,7 +261,8 @@ def main():
     print(f"Final price (last month-end): {final_price:.2f}")
     print("\nStrategy A (DCA):")
     cagr_a = calculate_cagr(final_value_a, total_invested_a, start_dt, end_dt)
-    print(f"  CAGR A: {cagr_a*100:.2f}%")
+    print(f"  DCA net return: {net_return_a*100:.2f}%")
+    print(f"  CAGR DCA: {cagr_a*100:.2f}%")
     print(f"  Total invested: ${total_invested_a:,.2f}")
     print(f"  Final portfolio value: ${final_value_a:,.2f}")
     print(f"  Max drawdown: {max_dd_a*100:.2f}%")
@@ -270,8 +272,8 @@ def main():
     invested_b = MONTHLY_AMOUNT * len(monthly) - df_b['cash'].iloc[-1]
     cagr_b = calculate_cagr(final_value_b, total_invested_b, start_dt, end_dt)
     max_cash_held = df_b["cash"].max()
-
-    print(f"  CAGR: {cagr_b*100:.2f}%")
+    print(f"  DIP net return: {net_return_b*100:.2f}%")
+    print(f"  CAGR DIP: {cagr_b*100:.2f}%")
     print(f"  Total money supplied (budgeted): ${MONTHLY_AMOUNT * len(monthly):,.2f}")
     print(f"  Total invested (actually spent): ${invested_b:,.2f}")
     print(f"  Final portfolio value: ${final_value_b:,.2f}")
