@@ -46,6 +46,11 @@ import argparse
 import glob
 import os
 
+def calculate_max_drawdown(series):
+    running_max = series.cummax()
+    drawdown = (series - running_max) / running_max
+    return drawdown.min()
+
 def calculate_cagr(final_value, total_invested, start_date, end_date):
     days = (end_date - start_date).days
     years = days / 365.25
@@ -221,16 +226,20 @@ def main():
     final_price = monthly['adj_close'].iloc[-1]
     final_value_a = shares_a * final_price + cash_a
     total_invested_a = MONTHLY_AMOUNT * len(df_a)
+    net_return_a = (final_value_a - total_invested_a) / total_invested_a
 
     # Strategy B: buy-the-dip
     df_b, shares_b, cash_b = simulate_dip_strategy(monthly, MONTHLY_AMOUNT, DROP_THRESHOLD)
     final_value_b = shares_b * final_price + cash_b
     total_invested_b = MONTHLY_AMOUNT * len(df_b)
+    net_return_b = (final_value_b - total_invested_b) / total_invested_b
     dca_invest_months = (df_a["cash_in"] > 0).sum()
     dip_invest_months = (df_b["shares_bought"] > 0).sum()
     dip_no_invest_months = df_b.index[df_b["shares_bought"] == 0]
     # Longest consecutive waiting streak (in months)
     no_buy = (df_b["shares_bought"] == 0).astype(int)
+    max_dd_a = calculate_max_drawdown(df_a["total_value"])
+    max_dd_b = calculate_max_drawdown(df_b["total_value"])
 
     max_wait = 0
     current = 0
@@ -254,6 +263,7 @@ def main():
     print(f"  CAGR A: {cagr_a*100:.2f}%")
     print(f"  Total invested: ${total_invested_a:,.2f}")
     print(f"  Final portfolio value: ${final_value_a:,.2f}")
+    print(f"  Max drawdown: {max_dd_a*100:.2f}%")
     print(f"  Shares held: {shares_a:.6f}  Cash leftover: ${cash_a:.2f}")
 
     print("\nStrategy B (Buy-the-dip):")
@@ -268,6 +278,7 @@ def main():
     print(f"  Shares held: {shares_b:.6f}  Cash leftover: ${cash_b:.2f}")
     print(f"  Max consecutive months waiting for dip: {max_wait}")
     print(f"  Maximum cash held: ${max_cash_held:,.2f}")
+    print(f"  Max drawdown: {max_dd_b*100:.2f}%")
     print("\n--- Additional Analysis ---")
     print(f"DCA invested in {dca_invest_months} months")
     print(f"DIP invested in {dip_invest_months} months")
