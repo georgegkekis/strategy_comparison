@@ -259,6 +259,7 @@ def main():
     print("\nStrategy B (Buy-the-dip):")
     invested_b = MONTHLY_AMOUNT * len(monthly) - df_b['cash'].iloc[-1]
     cagr_b = calculate_cagr(final_value_b, total_invested_b, start_dt, end_dt)
+    max_cash_held = df_b["cash"].max()
 
     print(f"  CAGR: {cagr_b*100:.2f}%")
     print(f"  Total money supplied (budgeted): ${MONTHLY_AMOUNT * len(monthly):,.2f}")
@@ -266,6 +267,7 @@ def main():
     print(f"  Final portfolio value: ${final_value_b:,.2f}")
     print(f"  Shares held: {shares_b:.6f}  Cash leftover: ${cash_b:.2f}")
     print(f"  Max consecutive months waiting for dip: {max_wait}")
+    print(f"  Maximum cash held: ${max_cash_held:,.2f}")
     print("\n--- Additional Analysis ---")
     print(f"DCA invested in {dca_invest_months} months")
     print(f"DIP invested in {dip_invest_months} months")
