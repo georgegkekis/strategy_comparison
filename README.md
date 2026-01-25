@@ -36,7 +36,6 @@ Track for each month:
     Cash balance
     Shares held
     Total portfolio value
-    All-time-high
 Assumptions (no trading fees, no slippage, dividents)
 
 4. Results
@@ -53,9 +52,7 @@ Months where dip strategy bought substantial amounts
 
 4.3 Cash Accumulation Behavior
 Maximum cash held
-Average cash held
-Length of time cash stayed idle
-“Cash drag” observations
+Max Length of time cash stayed idle
 
 4.4 Returns Comparison
 Total invested
@@ -67,7 +64,6 @@ Annualized return (CAGR)
 Maximum cash idle time
 Maximum drawdown
 Volatility (std dev of monthly returns)
-Worst 12-month period
 Sharpe ratio (risk-adjusted performance)
 
 4.6 Sensitivity Analysis
