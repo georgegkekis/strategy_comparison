@@ -75,6 +75,7 @@ def parse_args():
     return parser.parse_args()
 
 def download_monthly_prices(ticker, start, end):
+    print(f"Downloading {ticker} data from {start} to {end}...")
     data = yf.download(ticker, start=start, end=end, progress=False, auto_adjust=False)
     if data.empty:
         raise RuntimeError("No data downloaded. Check ticker and network.")
@@ -83,6 +84,7 @@ def download_monthly_prices(ticker, start, end):
     monthly = data['AdjClose'].resample('M').last().to_frame(name='adj_close')
     monthly = monthly.dropna()
     monthly.index = monthly.index.tz_localize(None)
+    print(f"Got {len(monthly)} month-ends. Range {monthly.index.min().date()} to {monthly.index.max().date()}")
     return monthly
 
 def simulate_dca(monthly_prices, monthly_amount):
@@ -217,9 +219,10 @@ def main():
     END_DATE = args.end
     MONTHLY_AMOUNT = args.monthly
     DROP_THRESHOLD = args.threshold
-    print(f"Downloading {TICKER} data from {START_DATE} to {END_DATE}...")
+
     monthly = download_monthly_prices(TICKER, START_DATE, END_DATE)
-    print(f"Got {len(monthly)} month-ends. Range {monthly.index.min().date()} to {monthly.index.max().date()}")
+    start_dt = monthly.index[0].to_pydatetime()
+    end_dt   = monthly.index[-1].to_pydatetime()
 
     # Strategy A: DCA
     df_a, shares_a, cash_a = simulate_dca(monthly, MONTHLY_AMOUNT)
@@ -227,20 +230,22 @@ def main():
     final_value_a = shares_a * final_price + cash_a
     total_invested_a = MONTHLY_AMOUNT * len(df_a)
     net_return_a = (final_value_a - total_invested_a) / total_invested_a
+    max_dd_a = calculate_max_drawdown(df_a["total_value"])
+    cagr_a = calculate_cagr(final_value_a, total_invested_a, start_dt, end_dt)
 
     # Strategy B: buy-the-dip
     df_b, shares_b, cash_b = simulate_dip_strategy(monthly, MONTHLY_AMOUNT, DROP_THRESHOLD)
     final_value_b = shares_b * final_price + cash_b
     total_invested_b = MONTHLY_AMOUNT * len(df_b)
     net_return_b = (final_value_b - total_invested_b) / total_invested_b
-    dca_invest_months = (df_a["cash_in"] > 0).sum()
     dip_invest_months = (df_b["shares_bought"] > 0).sum()
     dip_no_invest_months = df_b.index[df_b["shares_bought"] == 0]
     # Longest consecutive waiting streak (in months)
     no_buy = (df_b["shares_bought"] == 0).astype(int)
-    max_dd_a = calculate_max_drawdown(df_a["total_value"])
     max_dd_b = calculate_max_drawdown(df_b["total_value"])
-
+    invested_b = MONTHLY_AMOUNT * len(monthly) - df_b['cash'].iloc[-1]
+    cagr_b = calculate_cagr(final_value_b, total_invested_b, start_dt, end_dt)
+    max_cash_held = df_b["cash"].max()
 
     max_wait = 0
     current = 0
@@ -252,15 +257,14 @@ def main():
             current = 0
 
     substantial_buys = df_b[df_b["shares_bought"] * df_b["price"] >= 12 * MONTHLY_AMOUNT]
-    start_dt = monthly.index[0].to_pydatetime()
-    end_dt   = monthly.index[-1].to_pydatetime()
+
 
     # Print summary
     print("\n--- Summary ---")
     print(f"Months simulated: {len(monthly)}")
     print(f"Final price (last month-end): {final_price:.2f}")
     print("\nStrategy A (DCA):")
-    cagr_a = calculate_cagr(final_value_a, total_invested_a, start_dt, end_dt)
+
     print(f"  DCA net return: {net_return_a*100:.2f}%")
     print(f"  CAGR DCA: {cagr_a*100:.2f}%")
     print(f"  Total invested: ${total_invested_a:,.2f}")
@@ -269,9 +273,6 @@ def main():
     print(f"  Shares held: {shares_a:.6f}  Cash leftover: ${cash_a:.2f}")
 
     print("\nStrategy B (Buy-the-dip):")
-    invested_b = MONTHLY_AMOUNT * len(monthly) - df_b['cash'].iloc[-1]
-    cagr_b = calculate_cagr(final_value_b, total_invested_b, start_dt, end_dt)
-    max_cash_held = df_b["cash"].max()
     print(f"  DIP net return: {net_return_b*100:.2f}%")
     print(f"  CAGR DIP: {cagr_b*100:.2f}%")
     print(f"  Total money supplied (budgeted): ${MONTHLY_AMOUNT * len(monthly):,.2f}")
@@ -281,8 +282,8 @@ def main():
     print(f"  Max consecutive months waiting for dip: {max_wait}")
     print(f"  Maximum cash held: ${max_cash_held:,.2f}")
     print(f"  Max drawdown: {max_dd_b*100:.2f}%")
+
     print("\n--- Additional Analysis ---")
-    print(f"DCA invested in {dca_invest_months} months")
     print(f"DIP invested in {dip_invest_months} months")
     print(f"DIP skipped {len(dip_no_invest_months)} months")
     substantial_buys = substantial_buys.copy()  # avoid SettingWithCopyWarning
@@ -293,6 +294,7 @@ def main():
         print(substantial_buys[["price", "shares_bought", "invested"]])
     else:
         print("\nNo substantial DIP buys")
+
     # Save results and plots
     df_a.to_csv("strategy_dca_history.csv")
     df_b.to_csv("strategy_dip_history.csv")
