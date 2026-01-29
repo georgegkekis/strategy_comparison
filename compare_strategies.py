@@ -274,6 +274,17 @@ def plot_interactive_comparison(df_dca, df_dip, dip, ticker, years):
     fig.write_html(fname)
     print(f"Interactive chart saved as {fname}")
 
+def longest_streak(no_buy_series):
+    max_streak = 0
+    current = 0
+    for v in no_buy_series:
+        if v == 1:
+            current += 1
+            max_streak = max(max_streak, current)
+        else:
+            current = 0
+    return max_streak
+
 def main():
     args = parse_args()
     if args.run_tests:
@@ -313,16 +324,11 @@ def main():
     cagr_b = calculate_cagr(final_value_b, total_invested_b, start_dt, end_dt)
     max_cash_held = df_dip["cash"].max()
 
-    max_wait = 0
-    current = 0
-    for v in no_buy:
-        if v == 1:
-            current += 1
-            max_wait = max(max_wait, current)
-        else:
-            current = 0
+    max_wait = longest_streak(no_buy)
 
     substantial_buys = df_dip[df_dip["shares_bought"] * df_dip["price"] >= 12 * MONTHLY_AMOUNT]
+    substantial_buys = substantial_buys.copy()  # avoid SettingWithCopyWarning
+    substantial_buys["invested"] = substantial_buys["shares_bought"] * substantial_buys["price"]
 
 
     # Print summary
@@ -352,14 +358,9 @@ def main():
     print("\n--- Additional Analysis ---")
     print(f"DIP invested in {dip_invest_months} months")
     print(f"DIP skipped {len(dip_no_invest_months)} months")
-    substantial_buys = substantial_buys.copy()  # avoid SettingWithCopyWarning
-    substantial_buys["invested"] = substantial_buys["shares_bought"] * substantial_buys["price"]
-
-    if not substantial_buys.empty:
-        print("\nSubstantial DIP buys:")
-        print(substantial_buys[["price", "shares_bought", "invested"]])
-    else:
-        print("\nNo substantial DIP buys")
+    print("\nSubstantial DIP buys:")
+    print (f"{substantial_buys[['price','shares_bought','invested']]}"
+    if not substantial_buys.empty else "\nNo substantial DIP buys")
 
     # Save results and plots
     df_dca.to_csv("strategy_dca_history.csv")
