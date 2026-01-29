@@ -45,6 +45,7 @@ from datetime import datetime, timedelta
 import argparse
 import glob
 import os
+import plotly.graph_objects as go
 
 def calculate_max_drawdown(series):
     running_max = series.cummax()
@@ -208,6 +209,71 @@ def run_tests():
         print(f"{test_dir}: PASS")
 
 
+def extract_years(start_date, end_date):
+    d1 = pd.to_datetime(start_date)
+    d2 = pd.to_datetime(end_date)
+    years = (d2 - d1).days / 365.25
+    return int(round(years))
+
+def build_filename(ticker, years, dip, ext):
+    dip_pct = int(dip * 100)
+    safe_ticker = ticker.replace("^", "")
+    return f"{safe_ticker}_{years}y_dca_vs_dip{dip_pct}.{ext}"
+
+def plot_static_comparison(df_dca, df_dip, dip, ticker, years):
+    title = f"{ticker} — {years} years"
+    dip_pct = int(dip * 100)
+    dip_label = f"Dip {dip_pct}%"
+
+    perf = pd.DataFrame({
+        "DCA": df_dca["total_value"],
+        dip_label: df_dip["total_value"]
+    })
+
+    fname = build_filename(ticker, years, dip, "png")
+
+    perf.plot(figsize=(10, 6), title=title)
+    plt.ylabel("Portfolio value (USD)")
+    plt.grid(True)
+    plt.savefig(fname, dpi=250)
+    plt.close()
+    print(f"Static chart saved as {fname}")
+
+def plot_interactive_comparison(df_dca, df_dip, dip, ticker, years):
+    title = f"{ticker} — {years} years"
+
+    dip_pct = int(dip * 100)
+    dip_label = f"Dip {dip_pct}%"
+
+    perf = pd.DataFrame({
+        "DCA": df_dca["total_value"],
+        dip_label: df_dip["total_value"]
+    })
+
+    fname = build_filename(ticker, years, dip, "html")
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=perf.index, y=perf["DCA"],
+        mode="lines", name="DCA"
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=perf.index, y=perf[dip_label],
+        mode="lines", name=dip_label
+    ))
+
+    fig.update_layout(
+        title=title,
+        yaxis_title="Portfolio value (USD)",
+        xaxis_title="Date",
+        hovermode="x unified"
+    )
+
+    fig.write_html(fname)
+    print(f"Interactive chart saved as {fname}")
+
 def main():
     args = parse_args()
     if args.run_tests:
@@ -300,16 +366,11 @@ def main():
     df_dip.to_csv("strategy_dip_history.csv")
     print("\nDetailed histories saved to strategy_dca_history.csv and strategy_dip_history.csv")
 
-    # Combined performance plot
-    perf = pd.DataFrame({
-        'DCA_value': df_dca['total_value'],
-        'Dip_value': df_dip['total_value']
-    })
-    perf.plot(figsize=(10,6), title="Portfolio value over time")
-    plt.ylabel("Portfolio value (USD)")
-    plt.grid(True)
-    plt.savefig("strategy_comparison.png", dpi=150)
-    print("Comparison chart saved as strategy_comparison.png")
+    years = extract_years(args.start, args.end)
+
+    plot_static_comparison(df_dca, df_dip, args.threshold, args.ticker, years)
+    plot_interactive_comparison(df_dca, df_dip, args.threshold, args.ticker, years)
+
 
 if __name__ == "__main__":
     main()
