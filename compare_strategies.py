@@ -182,8 +182,8 @@ def run_tests():
         monthly_prices = pd.read_csv(data_path, parse_dates=["date"])
         monthly_prices = monthly_prices.set_index("date")
 
-        df_a, shares_a, cash_a = simulate_dca(monthly_prices, monthly)
-        df_b, shares_b, cash_b = simulate_dip_strategy(monthly_prices, monthly, th)
+        df_dca, shares_a, cash_a = simulate_dca(monthly_prices, monthly)
+        df_dip, shares_b, cash_b = simulate_dip_strategy(monthly_prices, monthly, th)
 
         final_price = monthly_prices["adj_close"].iloc[-1]
 
@@ -225,27 +225,27 @@ def main():
     end_dt   = monthly.index[-1].to_pydatetime()
 
     # Strategy A: DCA
-    df_a, shares_a, cash_a = simulate_dca(monthly, MONTHLY_AMOUNT)
+    df_dca, shares_a, cash_a = simulate_dca(monthly, MONTHLY_AMOUNT)
     final_price = monthly['adj_close'].iloc[-1]
     final_value_a = shares_a * final_price + cash_a
-    total_invested_a = MONTHLY_AMOUNT * len(df_a)
+    total_invested_a = MONTHLY_AMOUNT * len(df_dca)
     net_return_a = (final_value_a - total_invested_a) / total_invested_a
-    max_dd_a = calculate_max_drawdown(df_a["total_value"])
+    max_dd_a = calculate_max_drawdown(df_dca["total_value"])
     cagr_a = calculate_cagr(final_value_a, total_invested_a, start_dt, end_dt)
 
     # Strategy B: buy-the-dip
-    df_b, shares_b, cash_b = simulate_dip_strategy(monthly, MONTHLY_AMOUNT, DROP_THRESHOLD)
+    df_dip, shares_b, cash_b = simulate_dip_strategy(monthly, MONTHLY_AMOUNT, DROP_THRESHOLD)
     final_value_b = shares_b * final_price + cash_b
-    total_invested_b = MONTHLY_AMOUNT * len(df_b)
+    total_invested_b = MONTHLY_AMOUNT * len(df_dip)
     net_return_b = (final_value_b - total_invested_b) / total_invested_b
-    dip_invest_months = (df_b["shares_bought"] > 0).sum()
-    dip_no_invest_months = df_b.index[df_b["shares_bought"] == 0]
+    dip_invest_months = (df_dip["shares_bought"] > 0).sum()
+    dip_no_invest_months = df_dip.index[df_dip["shares_bought"] == 0]
     # Longest consecutive waiting streak (in months)
-    no_buy = (df_b["shares_bought"] == 0).astype(int)
-    max_dd_b = calculate_max_drawdown(df_b["total_value"])
-    invested_b = MONTHLY_AMOUNT * len(monthly) - df_b['cash'].iloc[-1]
+    no_buy = (df_dip["shares_bought"] == 0).astype(int)
+    max_dd_b = calculate_max_drawdown(df_dip["total_value"])
+    invested_b = MONTHLY_AMOUNT * len(monthly) - df_dip['cash'].iloc[-1]
     cagr_b = calculate_cagr(final_value_b, total_invested_b, start_dt, end_dt)
-    max_cash_held = df_b["cash"].max()
+    max_cash_held = df_dip["cash"].max()
 
     max_wait = 0
     current = 0
@@ -256,7 +256,7 @@ def main():
         else:
             current = 0
 
-    substantial_buys = df_b[df_b["shares_bought"] * df_b["price"] >= 12 * MONTHLY_AMOUNT]
+    substantial_buys = df_dip[df_dip["shares_bought"] * df_dip["price"] >= 12 * MONTHLY_AMOUNT]
 
 
     # Print summary
@@ -296,14 +296,14 @@ def main():
         print("\nNo substantial DIP buys")
 
     # Save results and plots
-    df_a.to_csv("strategy_dca_history.csv")
-    df_b.to_csv("strategy_dip_history.csv")
+    df_dca.to_csv("strategy_dca_history.csv")
+    df_dip.to_csv("strategy_dip_history.csv")
     print("\nDetailed histories saved to strategy_dca_history.csv and strategy_dip_history.csv")
 
     # Combined performance plot
     perf = pd.DataFrame({
-        'DCA_value': df_a['total_value'],
-        'Dip_value': df_b['total_value']
+        'DCA_value': df_dca['total_value'],
+        'Dip_value': df_dip['total_value']
     })
     perf.plot(figsize=(10,6), title="Portfolio value over time")
     plt.ylabel("Portfolio value (USD)")
