@@ -333,7 +333,9 @@ def run_batch(args):
                 summaries.append(res)
 
     summary_df = pd.DataFrame(summaries)
-    summary_df.to_csv("summary.csv", index=False)
+    base_path = Path("backtest_results")
+    base_path.mkdir(parents=True, exist_ok=True)
+    summary_df.to_csv(base_path/"summary.csv", index=False)
 
 def run_single(ticker, start_date, end_date, monthly_amount, drop_threshold):
     TICKER = ticker
@@ -407,9 +409,11 @@ def run_single(ticker, start_date, end_date, monthly_amount, drop_threshold):
     if not substantial_buys.empty else "\nNo substantial DIP buys")
 
     # Save results and plots
-    df_dca.to_csv("strategy_dca_history.csv")
-    df_dip.to_csv("strategy_dip_history.csv")
-    print("\nDetailed histories saved to strategy_dca_history.csv and strategy_dip_history.csv")
+    base_path = Path("backtest_results")
+    base_path.mkdir(parents=True, exist_ok=True)
+    df_dca.to_csv(base_path/"strategy_dca_history.csv")
+    df_dip.to_csv(base_path/"strategy_dip_history.csv")
+    print(f"\nDetailed histories saved to {base_path}/strategy_dca_history.csv and {base_path}/strategy_dip_history.csv")
 
     years = extract_years(START_DATE, END_DATE)
     plot_static_comparison(df_dca, df_dip, DROP_THRESHOLD, TICKER, years)
