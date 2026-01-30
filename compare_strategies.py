@@ -46,6 +46,7 @@ import argparse
 import glob
 import os
 import plotly.graph_objects as go
+from pathlib import Path
 
 #   Example cases
 #   S&P 500, 10y, DCA
@@ -237,7 +238,11 @@ def extract_years(start_date, end_date):
 def build_filename(ticker, years, dip, ext):
     dip_pct = int(dip * 100)
     safe_ticker = ticker.replace("^", "")
-    return f"{safe_ticker}_{years}y_dca_vs_dip{dip_pct}.{ext}"
+    filename =  f"{safe_ticker}_{years}y_dca_vs_dip{dip_pct}.{ext}"
+    base_path = Path("backtest_results")
+    base_path.mkdir(parents=True, exist_ok=True)
+
+    return base_path / filename
 
 def plot_static_comparison(df_dca, df_dip, dip, ticker, years):
     title = f"{ticker} — {years} years"
