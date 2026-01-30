@@ -86,7 +86,7 @@ def parse_args():
     parser.add_argument("--end", type=str, default="2025-01-01",
                         help="Backtest end date YYYY-MM-DD (default: 2025-01-01)")
     parser.add_argument("--threshold", type=float, default=0.05,
-                        help="Dip threshold as decimal (default: 0.05 = 5%)")
+                        help="Dip threshold as decimal (default: 0.05 = 5%%)")
     parser.add_argument("--run-tests", action="store_true",
                         help="Run all tests in /tests directory")
     return parser.parse_args()
