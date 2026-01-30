@@ -89,6 +89,9 @@ def parse_args():
                         help="Dip threshold as decimal (default: 0.05 = 5%%)")
     parser.add_argument("--run-tests", action="store_true",
                         help="Run all tests in /tests directory")
+    parser.add_argument("--run-batch", action="store_true",
+                        help="Run all cases in CASES (batch mode)")
+
     return parser.parse_args()
 
 def download_monthly_prices(ticker, start, end):
@@ -301,17 +304,38 @@ def longest_streak(no_buy_series):
             current = 0
     return max_streak
 
-def main():
-    args = parse_args()
-    if args.run_tests:
-        run_tests()
-        return
+def run_batch(args):
+    end_dt = pd.to_datetime(args.end)
+    summaries = []
 
-    TICKER = args.ticker
-    START_DATE = args.start
-    END_DATE = args.end
-    MONTHLY_AMOUNT = args.monthly
-    DROP_THRESHOLD = args.threshold
+
+    for case in CASES:
+        inst = case["inst"]
+        ticker = case["ticker"]
+        safe_ticker = ticker.replace("^", "")
+
+        for years in case["years"]:
+            start_date = (end_dt - pd.DateOffset(years=years)).strftime("%Y-%m-%d")
+
+            for dip in case["dips"]:
+                if dip is None:
+                    continue
+
+                print(f"\n== {inst} ({ticker}) | {years}y | dip {int(dip*100)}% ==")
+                res = run_single(ticker, start_date, args.end, args.monthly, dip)
+
+                res["inst"] = inst
+                summaries.append(res)
+
+    summary_df = pd.DataFrame(summaries)
+    summary_df.to_csv("summary.csv", index=False)
+
+def run_single(ticker, start_date, end_date, monthly_amount, drop_threshold):
+    TICKER = ticker
+    START_DATE = start_date
+    END_DATE = end_date
+    MONTHLY_AMOUNT = monthly_amount
+    DROP_THRESHOLD = drop_threshold
 
     monthly = download_monthly_prices(TICKER, START_DATE, END_DATE)
     start_dt = monthly.index[0].to_pydatetime()
@@ -345,7 +369,6 @@ def main():
     substantial_buys = df_dip[df_dip["shares_bought"] * df_dip["price"] >= 12 * MONTHLY_AMOUNT]
     substantial_buys = substantial_buys.copy()  # avoid SettingWithCopyWarning
     substantial_buys["invested"] = substantial_buys["shares_bought"] * substantial_buys["price"]
-
 
     # Print summary
     print("\n--- Summary ---")
@@ -383,11 +406,41 @@ def main():
     df_dip.to_csv("strategy_dip_history.csv")
     print("\nDetailed histories saved to strategy_dca_history.csv and strategy_dip_history.csv")
 
-    years = extract_years(args.start, args.end)
+    years = extract_years(START_DATE, END_DATE)
+    plot_static_comparison(df_dca, df_dip, DROP_THRESHOLD, TICKER, years)
+    plot_interactive_comparison(df_dca, df_dip, DROP_THRESHOLD, TICKER, years)
 
-    plot_static_comparison(df_dca, df_dip, args.threshold, args.ticker, years)
-    plot_interactive_comparison(df_dca, df_dip, args.threshold, args.ticker, years)
+    return {
+        "ticker": TICKER,
+        "start": START_DATE,
+        "end": END_DATE,
+        "years": years,
+        "dip": DROP_THRESHOLD,
 
+        "dca_net_return": net_return_a,
+        "dip_net_return": net_return_b,
+        "net_return_diff": net_return_b - net_return_a,  # + means DIP beat DCA
+
+        "winner": "DIP" if net_return_b > net_return_a else "DCA",
+
+        "dca_final_value": final_value_a,
+        "dip_final_value": final_value_b,
+        "dca_cagr": cagr_a,
+        "dip_cagr": cagr_b,
+        "dca_max_dd": max_dd_a,
+        "dip_max_dd": max_dd_b,
+        "dip_max_wait_months": max_wait,
+    }
+
+def main():
+    args = parse_args()
+    if args.run_tests:
+        run_tests()
+        return
+    if args.run_batch:
+        run_batch(args)
+        return
+    run_single(args.ticker, args.start, args.end, args.monthly, args.threshold)
 
 if __name__ == "__main__":
     main()
