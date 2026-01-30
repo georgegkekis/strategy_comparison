@@ -47,6 +47,22 @@ import glob
 import os
 import plotly.graph_objects as go
 
+#   Example cases
+#   S&P 500, 10y, DCA
+#   S&P 500, 10y, 5% dip
+#   S&P 500, 30y, 20% dip
+
+CASES = [
+{"inst":"S&P 500","ticker":"^GSPC","years":[10,30],"dips":[None,0.05,0.10,0.20]},
+{"inst":"Nasdaq 100","ticker":"^NDX","years":[10,30],"dips":[None,0.05,0.10,0.20]},
+{"inst":"Gold","ticker":"GLD","years":[10,30],"dips":[None,0.05,0.10,0.20]},
+{"inst":"Silver","ticker":"SLV","years":[10,30],"dips":[None,0.05,0.10,0.20]},
+{"inst":"Microsoft","ticker":"MSFT","years":[10,30],"dips":[None,0.05,0.10,0.20]},
+{"inst":"Intel","ticker":"INTC","years":[10,30],"dips":[None,0.05,0.10,0.20]},
+{"inst":"Tesla","ticker":"TSLA","years":[10,30],"dips":[None,0.05,0.10,0.20]},
+{"inst":"Coca-Cola","ticker":"KO","years":[10,30],"dips":[None,0.05,0.10,0.20]},
+]
+
 def calculate_max_drawdown(series):
     running_max = series.cummax()
     drawdown = (series - running_max) / running_max
