@@ -240,9 +240,16 @@ def build_filename(ticker, years, dip, ext):
     safe_ticker = ticker.replace("^", "")
     filename =  f"{safe_ticker}_{years}y_dca_vs_dip{dip_pct}.{ext}"
     base_path = Path("backtest_results")
-    base_path.mkdir(parents=True, exist_ok=True)
 
-    return base_path / filename
+    if ext.lower() == "html":
+        output_dir = base_path / "html"
+    elif ext.lower() == "png":
+        output_dir = base_path / "png"
+    else:
+        output_dir = base_path / "other"
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return output_dir / filename
 
 def plot_static_comparison(df_dca, df_dip, dip, ticker, years):
     title = f"{ticker} — {years} years"
