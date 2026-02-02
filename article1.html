@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Time in the Market vs Timing the Market: A 48-Test Reality Check</title>
+  <style>
+    :root {
+      --text: #111;
+      --muted: #666;
+      --bg: #fff;
+      --maxw: 820px;
+      --link: #0b57d0;
+      --rule: #e6e6e6;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    main {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 36px 18px 56px;
+    }
+    h1 {
+      font-size: 2rem;
+      line-height: 1.2;
+      margin: 0 0 18px;
+    }
+    h2 {
+      font-size: 1.35rem;
+      margin: 28px 0 10px;
+    }
+    p {
+      margin: 0 0 14px;
+    }
+    ul {
+      margin: 0 0 14px 1.1rem;
+      padding: 0;
+    }
+    figure {
+      margin: 20px 0;
+      padding: 0;
+    }
+    figcaption {
+      margin-top: 8px;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 22px 0;
+    }
+    em { color: var(--muted); }
+    a { color: var(--link); }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Time in the Market vs Timing the Market: A 48-Test Reality Check</h1>
+
+    <p>Buying the dip is one of the most persistent ideas in investing. It feels disciplined, patient, and rational: why invest now when prices might be lower tomorrow? Dollar-cost averaging, by contrast, feels almost careless. It invests regardless of headlines, valuations, or market mood.</p>
+
+    <p>Both strategies sound sensible. This article exists to test which one actually held up when applied consistently across historical data.</p>
+
+    <p>The motivation behind this research was practical rather than theoretical. Like many people, my own pension arrives as <strong>monthly contributions</strong>. That structure makes “perfect timing” impossible by definition. The real question is whether delaying investment to wait for better prices meaningfully improves long-term outcomes—or whether it quietly works against compounding.</p>
+
+    <p>To answer that, I ran a series of historical backtests comparing dollar-cost averaging (DCA) with systematic buy-the-dip (BTD) strategies across multiple assets and time horizons.</p>
+
+    <hr />
+
+    <h2>How the test was run</h2>
+
+    <p>The analysis compares two fully mechanical strategies:</p>
+
+    <ul>
+      <li><strong>Dollar-cost averaging:</strong> invest a fixed amount at the end of every month, regardless of price.</li>
+      <li><strong>Buy the dip:</strong> accumulate monthly contributions as cash and invest only when prices fall by a predefined percentage from their previous highs.</li>
+    </ul>
+
+    <p>All tests use adjusted closing prices, execute at month-end, and assume no trading fees, dividends, or discretionary decisions. The goal was not to optimize either strategy, but to compare them under identical conditions.</p>
+
+    <p>The dataset spans broad equity indexes, individual stocks, and commodities, tested over 10-year and 30-year windows. Dip thresholds of 5%, 10%, and 20% were evaluated. In total, <strong>48 distinct simulations</strong> were run. Full code, parameters, and raw transaction logs are available in the appendix.</p>
+
+    <hr />
+
+    <h2>What the evidence shows</h2>
+
+    <p>Across most assets and time horizons, a consistent pattern emerged: <strong>time in the market mattered more than timing the market</strong>.</p>
+
+    <h2>S&amp;P 500 — 30-year comparison</h2>
+
+    <figure>
+      <img src="backtest_results/GSPC_30y_dca_vs_dip10.png" alt="S&amp;P 500 DCA vs Dip 10% chart" />
+      <figcaption>Figure 1: S&amp;P 500, 30-year window. Dollar-cost averaging vs buy-the-dip (10% threshold).</figcaption>
+    </figure>
+
+    <p>In the S&amp;P 500, dollar-cost averaging steadily compounds over three decades. The buy-the-dip strategy does manage to purchase shares at lower prices during drawdowns, but it spends long stretches sitting in cash while the market rises.</p>
+
+    <p>The result is telling: despite “better” entry prices, the dip strategy finishes with a smaller portfolio. The lost compounding during bull markets overwhelms the advantage of buying during corrections.</p>
+
+    <p>This pattern is not driven by any single crisis. It persists through the dot-com bubble, the financial crisis, the COVID drawdown, and the post-2020 rally. The issue is structural rather than cyclical.</p>
+
+    <h2>Nasdaq 100 — 30-year comparison</h2>
+
+    <figure>
+      <img src="backtest_results/NDX_30y_dca_vs_dip20.png" alt="Nasdaq 100 DCA vs Dip 20% chart" />
+      <figcaption>Figure 2: Nasdaq 100, 30-year window. Dollar-cost averaging vs buy-the-dip (20% threshold).</figcaption>
+    </figure>
+
+    <p>The effect becomes even more pronounced in growth-heavy assets. In the Nasdaq 100, waiting for a 20% dip means remaining underinvested for years at a time. Deep drawdowns do occur—but they arrive unpredictably and often after substantial gains have already been missed.</p>
+
+    <p>Here, the cost of waiting is dramatic. The buy-the-dip portfolio lags not because it mistimed crashes, but because it failed to stay invested during extended periods of compounding.</p>
+
+    <hr />
+
+    <h2>Why this happens</h2>
+
+    <p>The underlying mechanism is straightforward.</p>
+
+    <p>Assets with long-term upward drift reward <strong>continuous exposure</strong>. Even imperfect entry points benefit from time spent compounding. Buy-the-dip strategies, by design, trade exposure for optionality: they accept less time in the market in exchange for the chance to buy lower.</p>
+
+    <p>In practice, that trade-off is rarely favorable. Dips are irregular, shallow more often than deep, and frequently followed by rapid recoveries. The deeper the dip threshold, the longer capital remains idle—and the larger the compounding penalty becomes.</p>
+
+    <p>In other words, the market charges rent for staying out.</p>
+
+    <hr />
+
+    <h2>What this does <em>not</em> mean</h2>
+
+    <p>These results do not imply that buying dips is always a mistake, nor that markets will behave the same way in the future. This analysis does not attempt to predict returns or recommend tactical timing rules. It also does not account for dividends, taxes, or behavioral deviations that real investors inevitably face.</p>
+
+    <p>What it does show is that, historically, <strong>waiting for better prices was usually more costly than accepting average ones</strong> when investing in assets with strong long-term growth.</p>
+
+    <hr />
+
+    <p>All charts, full result tables, and source code are available in the appendix.</p>
+
+    <p><em>This article is part of a four-part series comparing dollar-cost averaging and buy-the-dip strategies across assets and time horizons.</em></p>
+  </main>
+</body>
+</html>
+
