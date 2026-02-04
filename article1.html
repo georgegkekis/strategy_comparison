@@ -86,12 +86,12 @@
 
     <ul>
       <li><strong>Dollar-cost averaging:</strong> invest a fixed amount at the end of every month, regardless of price.</li>
-      <li><strong>Buy the dip:</strong> accumulate monthly contributions as cash and invest only when prices fall by a predefined percentage from their previous highs.</li>
+      <li><strong>Buy the dip:</strong> accumulate monthly contributions as cash and invest only when prices fall by a predefined percentage from their all time highs.</li>
     </ul>
 
     <p>All tests use adjusted closing prices, execute at month-end, and assume no trading fees, dividends, or discretionary decisions. The goal was not to optimize either strategy, but to compare them under identical conditions.</p>
 
-    <p>The dataset spans broad equity indexes, individual stocks, and commodities, tested over 10-year and 30-year windows. Dip thresholds of 5%, 10%, and 20% were evaluated. In total, <strong>48 distinct simulations</strong> were run. Full code, parameters, and raw transaction logs are available in the appendix.</p>
+    <p>The dataset spans  indexes, individual stocks, and commodities, tested over 10-year and 30-year windows. Dip thresholds of 5%, 10%, and 20% were evaluated. In total, <strong>48 distinct simulations</strong> were run. Full code, parameters, and raw transaction logs are available in the appendix.</p>
 
     <hr />
 
@@ -102,26 +102,26 @@
     <h2>S&amp;P 500 — 30-year comparison</h2>
 
     <figure>
-      <img src="backtest_results/GSPC_30y_dca_vs_dip10.png" alt="S&amp;P 500 DCA vs Dip 10% chart" />
+      <img src="backtest_results/png/GSPC_30y_dca_vs_dip10.png" alt="S&amp;P 500 DCA vs Dip 10% chart" />
       <figcaption>Figure 1: S&amp;P 500, 30-year window. Dollar-cost averaging vs buy-the-dip (10% threshold).</figcaption>
     </figure>
 
     <p>In the S&amp;P 500, dollar-cost averaging steadily compounds over three decades. The buy-the-dip strategy does manage to purchase shares at lower prices during drawdowns, but it spends long stretches sitting in cash while the market rises.</p>
 
-    <p>The result is telling: despite “better” entry prices, the dip strategy finishes with a smaller portfolio. The lost compounding during bull markets overwhelms the advantage of buying during corrections.</p>
+    <p>The result is telling. Over the 30-year period, the DCA portfolio grew to about $1.53 million, while the buy-the-dip strategy finished at roughly $1.40 million. Despite “better” entry prices, the dip strategy ended up about $124,000 behind, or roughly 9% lower in final portfolio value. The lost compounding during bull markets overwhelmed the advantage of buying during corrections.</p>
 
-    <p>This pattern is not driven by any single crisis. It persists through the dot-com bubble, the financial crisis, the COVID drawdown, and the post-2020 rally. The issue is structural rather than cyclical.</p>
+    <p>This pattern is not driven by any single crisis. It persists through the dot-com bubble, the financial crisis, the COVID drawdown, and the post-2020 rally.</p>
 
     <h2>Nasdaq 100 — 30-year comparison</h2>
 
     <figure>
-      <img src="backtest_results/NDX_30y_dca_vs_dip20.png" alt="Nasdaq 100 DCA vs Dip 20% chart" />
+      <img src="backtest_results/png/NDX_30y_dca_vs_dip20.png" alt="Nasdaq 100 DCA vs Dip 20% chart" />
       <figcaption>Figure 2: Nasdaq 100, 30-year window. Dollar-cost averaging vs buy-the-dip (20% threshold).</figcaption>
     </figure>
 
     <p>The effect becomes even more pronounced in growth-heavy assets. In the Nasdaq 100, waiting for a 20% dip means remaining underinvested for years at a time. Deep drawdowns do occur—but they arrive unpredictably and often after substantial gains have already been missed.</p>
 
-    <p>Here, the cost of waiting is dramatic. The buy-the-dip portfolio lags not because it mistimed crashes, but because it failed to stay invested during extended periods of compounding.</p>
+    <p>The outcome is stark. Over the 30-year period, the dollar-cost averaging portfolio grew to about $3.8 million, while the buy-the-dip strategy finished at roughly $2.6 million. The dip strategy ended up more than $1.2 million behind, or around 47% lower in final portfolio value. Here, the cost of waiting overwhelms the benefit of buying at lower prices.</p>
 
     <hr />
 
@@ -145,7 +145,7 @@
 
     <hr />
 
-    <p>All charts, full result tables, and source code are available in the appendix.</p>
+<p>You can find the full implementation, backtest scripts, and supporting files in the GitHub repository: <a href="https://github.com/georgegkekis/strategy_comparison">https://github.com/georgegkekis/strategy_comparison</a>.</p>
 
     <p><em>This article is part of a four-part series comparing dollar-cost averaging and buy-the-dip strategies across assets and time horizons.</em></p>
   </main>
