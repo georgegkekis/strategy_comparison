@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Time in the Market vs Timing the Market: A 48-Test Reality Check</title>
+  <style>
+    :root {
+      --text: #111;
+      --muted: #666;
+      --bg: #fff;
+      --maxw: 820px;
+      --link: #0b57d0;
+      --rule: #e6e6e6;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    main {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 36px 18px 56px;
+    }
+    h1 {
+      font-size: 2rem;
+      line-height: 1.2;
+      margin: 0 0 18px;
+    }
+    h2 {
+      font-size: 1.35rem;
+      margin: 28px 0 10px;
+    }
+    p {
+      margin: 0 0 14px;
+    }
+    ul {
+      margin: 0 0 14px 1.1rem;
+      padding: 0;
+    }
+    figure {
+      margin: 20px 0;
+      padding: 0;
+    }
+    figcaption {
+      margin-top: 8px;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 22px 0;
+    }
+    em { color: var(--muted); }
+    a { color: var(--link); }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>The Hidden Cost of Waiting for the Dip</h1>
+
+    <h2>Executive Summary</h2>
+
+    <p>Buying the dip feels prudent. Why invest at today’s price if a better one might arrive tomorrow?</p>
+
+    <p>This article asks a narrower question than the first: <strong>if buy-the-dip underperforms, what actually causes it?</strong> The answer turns out to be less about bad timing and more about an invisible cost that compounds quietly in the background.</p>
+
+    <p>The results show that the primary drag on dip strategies is not missing crashes, but <strong>sitting in cash while markets rise</strong>. Over long horizons, that waiting cost overwhelms the benefit of buying at lower prices.</p>
+
+    <p>For investors making regular contributions, the implication is simple but uncomfortable: patience can be expensive.</p>
+
+    <h2>The Question</h2>
+
+    <p>Both strategies sound reasonable on paper.</p>
+
+    <p>Dollar-cost averaging invests immediately and consistently, accepting whatever price the market offers. Buy-the-dip delays investment until prices fall by a predefined amount, aiming to enter at more attractive levels.</p>
+
+    <p>The intuition behind buy-the-dip is strong. If markets are volatile, waiting should improve entry prices. If drawdowns are inevitable, patience should be rewarded.</p>
+
+    <p>But intuition often ignores what happens <strong>while you wait</strong>.</p>
+
+    <p>This article focuses on that missing piece.</p>
+
+    <h2>How the Test Was Run</h2>
+
+    <p>The methodology is identical to the rest of the series.</p>
+
+    <p>Monthly contributions were simulated using historical adjusted close prices. Dollar-cost averaging invested every month. Buy-the-dip accumulated cash and invested only after prices fell by a specified percentage from prior highs.</p>
+
+    <p>Multiple assets, multiple time windows, and multiple dip triggers were tested, resulting in 48 total simulations. No trading fees, no dividends, and no leverage were included.</p>
+
+    <p>The goal was not to optimize either strategy, but to observe how they behave under realistic, repeatable rules.</p>
+
+    <p>Full technical details and code are available in the appendix.</p>
+
+    <h2>The Evidence</h2>
+
+    <p>The two charts below illustrate the same mechanism playing out in different ways.</p>
+
+    <p>In the S&amp;P 500 over three decades, buy-the-dip does achieve lower purchase prices during corrections. However, those opportunities are sporadic. In the meantime, capital accumulates in cash while the market trends upward. The result is a steadily widening gap driven not by bad trades, but by missed time in the market.</p>
+
+    <p>In growth-heavy assets like the Nasdaq 100, the effect becomes more severe. Deep dip triggers can leave large sums idle for years. When corrections finally arrive, they often come after substantial gains have already been missed. Here, the cost of waiting is amplified by the asset’s higher long-term growth rate.</p>
+
+    <p>In both cases, the underperformance is not caused by mistiming a single crash. It is the cumulative effect of <strong>systematically delaying exposure</strong>.</p>
+
+    <figure>
+      <img src="backtest_results/png/GSPC_30y_dca_vs_dip10.png" alt="S&amp;P 500 DCA vs Dip 10% chart" loading="lazy" />
+      <figcaption>Figure 1: S&amp;P 500, 30-year window. Dollar-cost averaging vs buy-the-dip (10% threshold).</figcaption>
+    </figure>
+
+    <style>
+      .chart-points {
+        margin: 10px 0 18px;
+        padding-left: 1.1rem;
+      }
+      .chart-points li {
+        margin: 6px 0;
+      }
+      .chart-points strong {
+        font-weight: 700;
+      }
+    </style>
+
+    <ul class="chart-points">
+      <li><strong>Typical long-horizon outcome:</strong> DCA stays invested and compounds; dip-buying spends meaningful time in cash.</li>
+      <li><strong>Better entries aren’t enough:</strong> the advantage of buying during drawdowns is often outweighed by missed exposure during bull runs.</li>
+      <li><strong>Magnitude here:</strong> DCA finished around <strong>$1.53M</strong> vs dip-buying around <strong>$1.35M</strong> (≈ <strong>$180K</strong> behind, roughly <strong>13%</strong> lower final value).</li>
+    </ul>
+
+    <figure>
+      <img src="backtest_results/png/NDX_30y_dca_vs_dip20.png" alt="Nasdaq 100 DCA vs Dip 20% chart" loading="lazy" />
+      <figcaption>Figure 2: Nasdaq 100, 30-year window. Dollar-cost averaging vs buy-the-dip (20% threshold).</figcaption>
+    </figure>
+
+    <ul class="chart-points">
+      <li><strong>Cash drag amplifies in growth assets:</strong> waiting for deep dips can leave capital underinvested for long stretches.</li>
+      <li><strong>Deep triggers are costly:</strong> a 20% dip trigger may buy “cheap” occasionally, but often misses years of compounding first.</li>
+      <li><strong>Magnitude here:</strong> DCA finished around <strong>$3.83M</strong> vs dip-buying around <strong>$2.61M</strong> (≈ <strong>$1.22M</strong> behind, roughly <strong>47%</strong> lower final value).</li>
+    </ul>
+
+    <h2>Why This Happens</h2>
+
+    <p>The core mechanism is cash drag.</p>
+
+    <p>Every month a dip strategy does not invest, it replaces market exposure with certainty: the certainty of earning nothing. That trade-off only makes sense if the future purchase happens quickly and at meaningfully lower prices.</p>
+
+    <p>In practice, markets spend far more time rising than falling. Even modest upward drift compounds relentlessly. Cash does not.</p>
+
+    <p>Lower entry prices help at the margin, but compounding works on time, not intentions. Missing months or years of growth creates a gap that occasional “good buys” rarely close.</p>
+
+    <p>This is not a behavioral failure or a tuning problem. It is a structural feature of the strategy.</p>
+
+    <h2>What This Does Not Mean</h2>
+
+    <p>This analysis does not claim that buying the dip never works. It does not argue that prices are always fair, or that volatility should be ignored.</p>
+
+    <p>It does not suggest that lump-sum investing always dominates, or that market timing is impossible in principle.</p>
+
+    <p>What it does show is narrower and more practical: <strong>for investors contributing regularly, delaying investment introduces a persistent cost that compounds against them</strong>.</p>
+
+    <p>Understanding that cost is essential before choosing patience over participation.</p>
+
+    <p><em>This article is part of a four-part series examining dollar-cost averaging and buy-the-dip strategies across assets and time horizons. Full data, charts, and source code are available in the appendix.</em></p>
+  </main>
+</body>
+</html>
