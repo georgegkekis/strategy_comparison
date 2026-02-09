@@ -1,0 +1,149 @@
+<section class="gen-banner" role="note" aria-label="Generated file notice">
+  <div class="gen-banner__title">
+    <strong>Generated report</strong> — this page is automatically produced from the backtest script.
+  </div>
+  <div class="gen-banner__meta" id="build-info">
+    <span><strong>Commit:</strong> <code id="build-commit">REPLACE_ME</code></span>
+    <span><strong>Built:</strong> <span id="build-time">REPLACE_ME</span></span>
+    <span><strong>Python:</strong> <code id="build-python">REPLACE_ME</code></span>
+    <span><strong>Data range:</strong> <span id="build-range">REPLACE_ME</span></span>
+  </div>
+</section>
+<style>
+  .results-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    margin: 18px 0 28px;
+  }
+  .results-table th, .results-table td {
+    border: 1px solid #e6e6e6;
+    padding: 8px 10px;
+    vertical-align: top;
+    white-space: nowrap;
+  }
+  .results-table th {
+    background: #fafafa;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    text-align: left;
+  }
+  .results-table tbody tr:nth-child(even) { background: #fcfcfc; }
+  .winner { font-weight: 700; }
+
+  /* --- Generated banner --- */
+  .gen-banner {
+    border: 1px solid #e6e6e6;
+    border-radius: 12px;
+    padding: 14px 14px 12px;
+    margin: 10px 0 18px;
+    background: #fafafa;
+  }
+  .gen-banner__title {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+  .gen-banner__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    font-size: 0.95rem;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  .gen-banner__meta code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.95em;
+    padding: 1px 6px;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    background: #fff;
+  }
+  .gen-banner__hint {
+    font-size: 0.92rem;
+    color: #666;
+  }
+</style>
+
+<div id="generated-results">
+  __RESULTS_TABLES__
+</div>
+
+<section id="takeaways">
+  <h2>Key Takeaways</h2>
+
+  <ol>
+    <li>
+      <strong>DCA is the long-horizon winner.</strong>
+      <p>
+        The long-term results challenge the very reason this analysis was started.
+        Across all instruments and dip triggers, DCA wins over 30 years, undermining the
+        assumption that waiting for drawdowns meaningfully improves outcomes and highlighting
+        the power of staying invested and letting compounding do the work.
+      </p>
+    </li>
+
+    <li>
+      <strong>Dip-buying can win in shorter windows, but it doesn't last long.</strong>
+      <p>
+        In shorter 10-year stretches, “buy the dip” behaves exactly how I expected it to.
+        There are clear examples where it beats DCA, reinforcing the appeal of waiting for
+        pullbacks. The problem is that these victories don’t survive longer horizons, exposing
+        timing as something that can feel right without actually being dependable.
+      </p>
+    </li>
+
+    <li>
+      <strong>Bigger dip triggers usually reduce returns.</strong>
+      <p>
+        Intuitively, waiting for a 20% dip feels more disciplined.
+        The data suggests the opposite. Those larger thresholds underperform across most
+        scenarios, turning patience into inactivity and reinforcing how often rebounds arrive
+        before “perfect” prices do.
+      </p>
+    </li>
+
+    <li>
+      <strong>Volatility changes the game (in the short term).</strong>
+      <p>
+        Silver initially looks like a clear exception.
+        Its 10-year results reward buying dips across the board, reflecting just how volatile
+        and range-bound it tends to be. But once the horizon stretches out, DCA still comes out
+        ahead, undercutting the idea that exploiting volatility alone is enough over decades.
+      </p>
+    </li>
+  </ol>
+</section>
+<script>
+  // Mark the document as generated (useful for QA + automation checks).
+  document.documentElement.setAttribute("data-generated", "true");
+
+  // Build metadata (replace values during generation).
+  // Your generator should string-replace the tokens below.
+  const BUILD = {
+    commit: "__GIT_COMMIT__",
+    builtAt: "__BUILD_TIME_ISO__",
+    python: "__PYTHON_VERSION__",
+    dataRange: "__DATA_RANGE__",
+  };
+
+  // Render build info (fallback to visible placeholders if not replaced).
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = (value && !value.includes("__")) ? value : "REPLACE_ME";
+  };
+
+  setText("build-commit", BUILD.commit);
+  setText("build-time", BUILD.builtAt);
+  setText("build-python", BUILD.python);
+  setText("build-range", BUILD.dataRange);
+
+
+  // Nice developer touch: make it obvious in DevTools.
+  console.info(
+    "[Generated] arrays.html",
+    { commit: BUILD.commit, builtAt: BUILD.builtAt, python: BUILD.python, dataRange: BUILD.dataRange }
+  );
+</script>

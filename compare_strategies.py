@@ -47,6 +47,8 @@ import glob
 import os
 import plotly.graph_objects as go
 from pathlib import Path
+import subprocess
+import sys
 
 #   Example cases
 #   S&P 500, 10y, DCA
@@ -63,6 +65,140 @@ CASES = [
 {"inst":"Tesla","ticker":"TSLA","years":[10,30],"dips":[None,0.05,0.10,0.20]},
 {"inst":"Coca-Cola","ticker":"KO","years":[10,30],"dips":[None,0.05,0.10,0.20]},
 ]
+
+def get_git_commit():
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"],
+            stderr=subprocess.DEVNULL
+        ).decode().strip()
+    except Exception:
+        return "unknown"
+
+def infer_data_range():
+    summary_path = Path("backtest_results") / "summary.csv"
+    if not summary_path.exists():
+        return "unknown"
+
+    df = pd.read_csv(summary_path)
+    if "start" in df.columns and "end" in df.columns:
+        start = pd.to_datetime(df["start"]).min().date()
+        end = pd.to_datetime(df["end"]).max().date()
+        return f"{start} to {end} (month-end, adj close)"
+
+    return "unknown"
+
+def render_arrays_html():
+    template = Path("arrays_template.html")
+    output = Path("arrays.html")
+
+    if not template.exists():
+        print("arrays_template.html not found — skipping arrays render.")
+        return
+
+    summary_path = Path("backtest_results") / "summary.csv"
+    tables_html = build_results_tables_html(summary_path)
+
+    commit = get_git_commit()
+    built_at = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+    pyver = sys.version.split()[0]
+    data_range = infer_data_range()
+
+    dips = sorted({d for c in CASES for d in c["dips"] if d is not None})
+    years = sorted({y for c in CASES for y in c["years"]})
+    run_params = f"assets={len(CASES)}, windows={years}, dips={[int(d*100) for d in dips]}%, monthly"
+
+    html = template.read_text(encoding="utf-8")
+    html = (
+        html.replace("__RESULTS_TABLES__", tables_html)
+            .replace("__GIT_COMMIT__", commit)
+            .replace("__BUILD_TIME_ISO__", built_at)
+            .replace("__PYTHON_VERSION__", pyver)
+            .replace("__DATA_RANGE__", data_range)
+            .replace("__RUN_PARAMS__", run_params)
+    )
+
+    output.write_text(html, encoding="utf-8")
+    print(f"Generated arrays.html (commit {commit})")
+
+def build_results_tables_html(summary_csv: Path) -> str:
+    if not summary_csv.exists():
+        return "<p><strong>Error:</strong> backtest_results/summary.csv not found. Run --run-batch first.</p>"
+
+    df = pd.read_csv(summary_csv)
+    needed = {"inst", "years", "dip", "start", "end", "dca_net_return", "dip_net_return", "winner"}
+    missing = needed - set(df.columns)
+    if missing:
+        return f"<p><strong>Error:</strong> summary.csv missing columns: {sorted(missing)}</p>"
+
+    def pct(x):
+        try:
+            return f"{float(x) * 100:.1f}%"
+        except Exception:
+            return "—"
+
+    def dip_label(d):
+        try:
+            return f"{int(float(d) * 100)}%"
+        except Exception:
+            return "—"
+
+    def year_int(x):
+        try:
+            return int(x)
+        except Exception:
+            try:
+                return int(pd.to_datetime(x).year)
+            except Exception:
+                return x
+
+    parts = []
+
+    for years in sorted(df["years"].unique()):
+        dfx = df[df["years"] == years].copy()
+
+        # Stable ordering: instrument then dip size
+        try:
+            dfx["dip_pct"] = (dfx["dip"].astype(float) * 100).round().astype(int)
+            dfx = dfx.sort_values(["inst", "dip_pct"])
+        except Exception:
+            dfx = dfx.sort_values(["inst"])
+
+        parts.append(f"<h3>{int(years)}-year results</h3>")
+        parts.append("")
+        parts.append(
+            '<table class="results-table">\n'
+            "  <thead>\n"
+            "    <tr>\n"
+            "      <th>Instrument</th>\n"
+            "      <th>Dip trigger</th>\n"
+            "      <th>Start</th>\n"
+            "      <th>End</th>\n"
+            "      <th>DCA return</th>\n"
+            "      <th>Dip return</th>\n"
+            "      <th>Winner</th>\n"
+            "    </tr>\n"
+            "  </thead>\n"
+            "  <tbody>"
+        )
+
+        for _, r in dfx.iterrows():
+            winner = str(r["winner"]).strip()
+            parts.append(
+                "<tr>"
+                f"<td>{r['inst']}</td>"
+                f"<td>{dip_label(r['dip'])}</td>"
+                f"<td>{year_int(r['start'])}</td>"
+                f"<td>{year_int(r['end'])}</td>"
+                f"<td>{pct(r['dca_net_return'])}</td>"
+                f"<td>{pct(r['dip_net_return'])}</td>"
+                f"<td class=\"winner\">{winner}</td>"
+                "</tr>"
+            )
+
+        parts.append("  </tbody>\n</table>\n")
+
+    return "\n".join(parts)
 
 def calculate_max_drawdown(series):
     running_max = series.cummax()
@@ -343,6 +479,7 @@ def run_batch(args):
     base_path = Path("backtest_results")
     base_path.mkdir(parents=True, exist_ok=True)
     summary_df.to_csv(base_path/"summary.csv", index=False)
+    render_arrays_html()
 
 def run_single(ticker, start_date, end_date, monthly_amount, drop_threshold):
     TICKER = ticker
