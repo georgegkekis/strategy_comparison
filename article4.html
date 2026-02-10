@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Time in the Market vs Timing the Market: A 48-Test Reality Check</title>
+  <style>
+    :root {
+      --text: #111;
+      --muted: #666;
+      --bg: #fff;
+      --maxw: 820px;
+      --link: #0b57d0;
+      --rule: #e6e6e6;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    main {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 36px 18px 56px;
+    }
+    h1 {
+      font-size: 2rem;
+      line-height: 1.2;
+      margin: 0 0 18px;
+    }
+    h2 {
+      font-size: 1.35rem;
+      margin: 28px 0 10px;
+    }
+    p {
+      margin: 0 0 14px;
+    }
+    ul {
+      margin: 0 0 14px 1.1rem;
+      padding: 0;
+    }
+    figure {
+      margin: 20px 0;
+      padding: 0;
+    }
+    figcaption {
+      margin-top: 8px;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 22px 0;
+    }
+    em { color: var(--muted); }
+    a { color: var(--link); }
+  </style>
+</head>
+<body>
+  <main>
+<h1>Why Buying the Dip Works on Silver but Not the S&amp;P 500</h1>
+
+<h2>Executive Summary</h2>
+
+<p>
+  Buying the dip usually underperforms over long horizons.
+  That conclusion shows up repeatedly in this analysis.
+</p>
+
+<p>
+  What is less obvious is that it does not fail everywhere in the same way.
+  In certain assets—Silver being the clearest example—buying the dip can
+  outperform for extended periods.
+</p>
+
+<p>
+  This article asks a narrower question: <strong>why does dip-buying appear to work
+  on some assets but consistently fail on broad market indexes?</strong>
+</p>
+
+<p>
+  The answer has less to do with execution and more to do with how different
+  assets generate returns.
+</p>
+
+<h2>The Question</h2>
+
+<p>
+  If buying the dip underperforms on indexes, why does it sometimes succeed elsewhere?
+</p>
+
+<p>
+  The intuition behind dip-buying is straightforward. Volatility creates opportunity.
+  If prices fall and later recover, waiting should improve entry points.
+</p>
+
+<p>
+  That logic assumes all assets behave the same way.
+  The data suggests they do not.
+</p>
+
+<p>
+  This article compares two very different environments:
+  <strong>broad equity indexes</strong> and <strong>volatile, non-compounding assets</strong>.
+</p>
+
+<h2>How the Test Was Run</h2>
+
+<p>
+  The methodology matches the rest of the series.
+</p>
+
+<p>
+  Monthly contributions were simulated using historical prices.
+  Dollar-cost averaging invested immediately each month.
+  Buy-the-dip accumulated cash and invested only after prices fell
+  by predefined thresholds.
+</p>
+
+<p>
+  Multiple dip sizes and time windows were tested.
+  No leverage, no fees, and no optimization were applied.
+</p>
+
+<p>
+  The goal was not to find a winning tactic, but to observe
+  how each strategy behaves across different types of assets.
+</p>
+
+<h2>The Evidence</h2>
+
+<p>
+  On broad indexes like the S&amp;P 500, the pattern is consistent.
+  Buy-the-dip occasionally achieves better entry prices,
+  but spends long stretches in cash while the market trends upward.
+</p>
+
+<p>
+  Over decades, that waiting cost overwhelms the benefit of buying lower.
+</p>
+
+<figure>
+  <img src="backtest_results/png/GSPC_30y_dca_vs_dip10.png" alt="S&amp;P 500 DCA vs Dip 10% chart" loading="lazy" />
+  <figcaption>
+    Figure 1: S&amp;P 500, 30-year window. Waiting for dips leaves capital idle
+    during long periods of compounding.
+  </figcaption>
+</figure>
+
+<p>
+  Silver tells a different story—at least initially.
+</p>
+
+<p>
+  Over 10-year windows, buying the dip in Silver consistently outperforms DCA
+  across multiple thresholds. The strategy behaves exactly as intuition predicts.
+</p>
+
+<figure>
+  <img src="backtest_results/png/SILVER_10y_dca_vs_dip.png" alt="Silver 10-year DCA vs Dip chart" loading="lazy" />
+  <figcaption>
+    Figure 2: Silver, 10-year window. High volatility and frequent reversals
+    reward dip-buying.
+  </figcaption>
+</figure>
+
+<h2>Why This Happens</h2>
+
+<p>
+  The difference comes down to how returns are generated.
+</p>
+
+<p>
+  Equity indexes are compounding systems.
+  They grow through earnings, reinvestment, and the continual replacement
+  of weaker components with stronger ones.
+</p>
+
+<p>
+  Missing time in these systems is costly because growth is persistent
+  and asymmetric to the upside.
+</p>
+
+<p>
+  Silver does not compound internally.
+  Its price is driven by sentiment, macro conditions, and speculation.
+  It tends to oscillate rather than trend.
+</p>
+
+<p>
+  In a mean-reverting environment, waiting for dips can be rewarded—
+  not because time helps, but because volatility does.
+</p>
+
+<h2>Why the Advantage Fades</h2>
+
+<p>
+  When the horizon extends, the edge disappears.
+</p>
+
+<p>
+  Over 30-year windows, even Silver stops rewarding timing.
+  DCA pulls ahead simply by remaining exposed during periods of gain.
+</p>
+
+<p>
+  The success of dip-buying depends on conditions that are unstable over time:
+  sustained volatility, bounded ranges, and frequent reversals.
+</p>
+
+<p>
+  As those conditions weaken, the cost of waiting reasserts itself.
+</p>
+
+<h2>What This Does Not Mean</h2>
+
+<p>
+  This analysis does not claim that buying the dip never works.
+</p>
+
+<p>
+  It does not suggest that markets are always efficient
+  or that volatility cannot be exploited.
+</p>
+
+<p>
+  What it does show is more limited:
+  <strong>timing strategies depend heavily on the structure of the asset itself</strong>.
+</p>
+
+<p>
+  Applying a trading tactic designed for volatile, non-compounding assets
+  to long-term growth systems produces predictable disappointment.
+</p>
+
+<h2>Final Takeaway</h2>
+
+<p>
+  Buying the dip can work—but only in the right environment.
+</p>
+
+<p>
+  Assets that mean-revert and lack internal growth may reward patience.
+  Assets designed to compound over time generally do not.
+</p>
+
+<p>
+  Silver rewards timing until time overwhelms the edge.
+  Indexes punish timing because they never stop compounding.
+</p>
+  </main>
+</body>
+</html>
